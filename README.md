@@ -109,4 +109,55 @@ npm install -g @railway/cli
 # railway env (to see your environment variables)
     # This will show you your environment variables
 
+---
+
+## 🗄️ Supabase Database Setup (For Backend Dev)
+
+For the ML module to correctly perform face matching, the Supabase database must be set up with `pgvector` and an RPC function named `match_face`.
+
+**Run this exact SQL in the Supabase SQL Editor:**
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE OR REPLACE FUNCTION match_face (
+  query_embedding vector(512),
+  match_threshold float,
+  match_count int,
+  search_mode text
+)
+RETURNS TABLE (
+  id uuid,
+  person_id uuid,
+  name text,
+  type text,
+  blood_type text,
+  allergies text[],
+  conditions text[],
+  emergency_contact text,
+  similarity float
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    face_vectors.id,
+    face_vectors.person_id,
+    face_vectors.name,
+    face_vectors.type,
+    face_vectors.blood_type,
+    face_vectors.allergies,
+    face_vectors.conditions,
+    face_vectors.emergency_contact,
+    1 - (face_vectors.embedding <=> query_embedding) AS similarity
+  FROM face_vectors
+  WHERE face_vectors.type = search_mode
+    AND 1 - (face_vectors.embedding <=> query_embedding) > match_threshold
+  ORDER BY face_vectors.embedding <=> query_embedding
+  LIMIT match_count;
+END;
+$$;
+```
+
 

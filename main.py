@@ -1,6 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
+from core.config import supabase
+from core.match import match_person
+from core.enroll import enroll_person
 
 app = FastAPI(title="Mizpah ML API", description="Mock API for face recognition services")
 
@@ -34,9 +37,18 @@ class EnrollResponse(BaseModel):
 @app.post("/scan", response_model=ScanResponse)
 def scan_face(request: ScanRequest):
     """
-    Mock endpoint for scanning a face.
-    Returns a fake matched profile.
+    Endpoint for scanning a face.
+    If Supabase is configured, runs the real DeepFace match logic.
+    Otherwise, falls back to a mock response.
     """
+    if supabase is not None:
+        try:
+            result = match_person(request.image, request.mode)
+            return ScanResponse(**result)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+            
+    # Mock fallback
     if request.mode == "active":
         return ScanResponse(
             matched=True,
@@ -63,8 +75,22 @@ def scan_face(request: ScanRequest):
 @app.post("/enroll", response_model=EnrollResponse)
 def enroll_face(request: EnrollRequest):
     """
-    Mock endpoint for enrolling a face.
+    Endpoint for enrolling a face.
+    If Supabase is configured, runs the real DeepFace extraction logic.
+    Otherwise, returns a mock success.
     """
+    if supabase is not None:
+        try:
+            emb_id = enroll_person(request.image, request.person_id, request.type)
+            return EnrollResponse(
+                success=True,
+                message="Face enrolled successfully via DeepFace.",
+                embedding_id=str(emb_id)
+            )
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+            
+    # Mock fallback
     return EnrollResponse(
         success=True,
         message="Face enrolled successfully.",
@@ -73,5 +99,4 @@ def enroll_face(request: EnrollRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    # Run the mock server
     uvicorn.run(app, host="0.0.0.0", port=8000)
