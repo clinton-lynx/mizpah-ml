@@ -94,20 +94,17 @@ npm install -g @railway/cli
    ```
 4. Wait a few moments for the build to finish. Once completed, your live URL will be active.
 
-# railway domain (to get your domain url)
-    # This will give you your domain url
+### 🛠️ Useful Railway Commands
 
-# railway up (to deploy your code to railway  )
-    # This will deploy your code to railway
+Here are the most common commands you will need when managing your deployment:
 
-# railway redeploy (to redeploy your code to railway)
-    # This will redeploy your code to railway
-
-# railway logs (to see your logs)
-    # This will show you your logs
-
-# railway env (to see your environment variables)
-    # This will show you your environment variables
+| Command | Description |
+|---|---|
+| `railway up` | **Deploy your code**. Pushes your current local files to the Railway server. |
+| `railway domain` | **Get your URL**. Generates and displays your live public API URL. |
+| `railway logs` | **View live logs**. Streams the server logs so you can see print statements or errors. |
+| `railway redeploy` | **Force a redeploy**. Restarts your service and triggers a fresh build. |
+| `railway env` | **View environment variables**. Shows the secrets (like Supabase keys) configured on Railway. |
 
 ---
 
