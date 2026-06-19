@@ -2,8 +2,8 @@ from .enroll import decode_base64_image, generate_embedding
 from .config import supabase
 
 # Euclidean distance threshold for OpenCV SFace
-# SFace L2 distance threshold is ~1.128
-MATCH_THRESHOLD = 1.128 
+# SFace L2 distance threshold is ~1.128, but we relax it to 1.4 for varying webcam quality
+MATCH_THRESHOLD = 1.4 
 
 def match_person(image_b64: str, mode: str) -> dict:
     """
