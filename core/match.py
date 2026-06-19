@@ -1,9 +1,9 @@
 from .enroll import decode_base64_image, generate_embedding
 from .config import supabase
 
-# A realistic threshold for Facenet512 cosine similarity.
-# Lower means stricter. This will be calibrated later.
-MATCH_THRESHOLD = 0.40 
+# Euclidean distance threshold for dlib (face_recognition)
+# Usually 0.6 is the standard strict threshold
+MATCH_THRESHOLD = 0.6 
 
 def match_person(image_b64: str, mode: str) -> dict:
     """
@@ -29,7 +29,7 @@ def match_person(image_b64: str, mode: str) -> dict:
         'match_face',
         {
             'query_embedding': vector_string,
-            'match_threshold': 1 - MATCH_THRESHOLD, # pgvector uses distance, so similarity is 1 - distance
+            'match_threshold': MATCH_THRESHOLD, # Supabase now uses direct Euclidean distance
             'match_count': 1,
             'search_mode': mode
         }
@@ -42,9 +42,11 @@ def match_person(image_b64: str, mode: str) -> dict:
         
     best_match = results[0]
     
-    # Convert pgvector distance back to a confidence percentage
-    similarity = 1 - best_match['similarity']
-    confidence = round(similarity * 100, 1)
+    # Convert Euclidean distance to confidence percentage (0 distance = 100%, 0.6 distance = 0%)
+    distance = best_match['distance']
+    # Cap confidence between 0 and 100
+    confidence_val = max(0.0, 100 * (1 - (distance / MATCH_THRESHOLD)))
+    confidence = round(confidence_val, 1)
     
     return {
         "matched": True,

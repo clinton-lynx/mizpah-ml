@@ -6,7 +6,7 @@ This is the machine learning module for the Mizpah AI Vision Safety Platform. It
 
 ## 🚀 API Contract for Backend Integration
 
-**Base URL:** `<your-render-url>`
+**Base URL:** `https://mizpah-ml.onrender.com`
 
 ### 1. Scan Endpoint
 **Endpoint:** `POST /scan`  
@@ -81,8 +81,22 @@ For the ML module to correctly perform face matching, the Supabase database must
 ```sql
 CREATE EXTENSION IF NOT EXISTS vector;
 
+-- IMPORTANT: You must drop your old table and recreate it for 128 dimensions!
+-- DROP TABLE face_vectors;
+-- CREATE TABLE face_vectors (
+--   id uuid primary key default uuid_generate_v4(),
+--   person_id uuid,
+--   name text,
+--   type text,
+--   blood_type text,
+--   allergies text[],
+--   conditions text[],
+--   emergency_contact text,
+--   embedding vector(128)
+-- );
+
 CREATE OR REPLACE FUNCTION match_face (
-  query_embedding vector(512),
+  query_embedding vector(128),
   match_threshold float,
   match_count int,
   search_mode text
@@ -96,7 +110,7 @@ RETURNS TABLE (
   allergies text[],
   conditions text[],
   emergency_contact text,
-  similarity float
+  distance float
 )
 LANGUAGE plpgsql
 AS $$
@@ -111,11 +125,11 @@ BEGIN
     face_vectors.allergies,
     face_vectors.conditions,
     face_vectors.emergency_contact,
-    1 - (face_vectors.embedding <=> query_embedding) AS similarity
+    (face_vectors.embedding <-> query_embedding) AS distance
   FROM face_vectors
   WHERE face_vectors.type = search_mode
-    AND 1 - (face_vectors.embedding <=> query_embedding) > match_threshold
-  ORDER BY face_vectors.embedding <=> query_embedding
+    AND (face_vectors.embedding <-> query_embedding) < match_threshold
+  ORDER BY face_vectors.embedding <-> query_embedding ASC
   LIMIT match_count;
 END;
 $$;

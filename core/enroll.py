@@ -1,8 +1,8 @@
 import base64
 import numpy as np
 import cv2
-from deepface import DeepFace
-from .config import supabase, DEEPFACE_MODEL
+import face_recognition
+from .config import supabase
 
 def decode_base64_image(b64_string: str) -> np.ndarray:
     """Decodes a base64 string into an OpenCV image array."""
@@ -15,14 +15,17 @@ def decode_base64_image(b64_string: str) -> np.ndarray:
     return img
 
 def generate_embedding(image: np.ndarray) -> list:
-    """Extracts a face embedding using DeepFace."""
-    # Enforce detection and get embedding
-    objs = DeepFace.represent(img_path=image, model_name=DEEPFACE_MODEL, enforce_detection=True)
-    if not objs:
+    """Extracts a face embedding using dlib face_recognition."""
+    # Convert BGR (OpenCV) to RGB (face_recognition)
+    rgb_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    
+    # Get face encodings
+    encodings = face_recognition.face_encodings(rgb_img)
+    if not encodings:
         raise ValueError("No face detected in the image.")
     
-    # Return the 512-d embedding of the most prominent face
-    return objs[0]["embedding"]
+    # Return the 128-d embedding of the first face
+    return encodings[0].tolist()
 
 def enroll_person(image_b64: str, person_id: str, profile_type: str) -> str:
     """Generates embedding and stores it in Supabase."""

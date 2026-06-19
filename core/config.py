@@ -14,6 +14,3 @@ else:
     supabase = None
     print("WARNING: Supabase credentials not found. DB actions will fail.")
 
-# Set DeepFace configurations
-DEEPFACE_MODEL = "Facenet512" # Reliable and outputs 512-d embeddings
-DEEPFACE_METRIC = "cosine"
