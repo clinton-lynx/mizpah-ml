@@ -7,6 +7,10 @@ from core.enroll import enroll_person
 
 app = FastAPI(title="Mizpah ML API", description="Mock API for face recognition services")
 
+@app.get("/")
+def health_check():
+    return {"status": "ok", "message": "Mizpah ML API is running!"}
+
 class ScanRequest(BaseModel):
     image: str  # Base64 encoded image
     mode: str   # "passive" or "active"
