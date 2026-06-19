@@ -1,8 +1,17 @@
 import base64
 import numpy as np
 import cv2
-import face_recognition
+import os
 from .config import supabase
+
+# Paths to the models
+MODEL_DIR = os.path.join(os.path.dirname(__file__), 'models')
+YUNET_PATH = os.path.join(MODEL_DIR, "face_detection_yunet_2023mar.onnx")
+SFACE_PATH = os.path.join(MODEL_DIR, "face_recognition_sface_2021dec.onnx")
+
+# Initialize OpenCV models
+detector = cv2.FaceDetectorYN.create(YUNET_PATH, "", (320, 320))
+recognizer = cv2.FaceRecognizerSF.create(SFACE_PATH, "")
 
 def decode_base64_image(b64_string: str) -> np.ndarray:
     """Decodes a base64 string into an OpenCV image array."""
@@ -15,17 +24,23 @@ def decode_base64_image(b64_string: str) -> np.ndarray:
     return img
 
 def generate_embedding(image: np.ndarray) -> list:
-    """Extracts a face embedding using dlib face_recognition."""
-    # Convert BGR (OpenCV) to RGB (face_recognition)
-    rgb_img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    """Extracts a face embedding using native OpenCV SFace."""
+    height, width, _ = image.shape
+    detector.setInputSize((width, height))
     
-    # Get face encodings
-    encodings = face_recognition.face_encodings(rgb_img)
-    if not encodings:
+    faces = detector.detect(image)
+    if faces[1] is None:
         raise ValueError("No face detected in the image.")
     
-    # Return the 128-d embedding of the first face
-    return encodings[0].tolist()
+    # Get the most prominent face
+    face = faces[1][0]
+    
+    # Align and crop the face using landmarks
+    aligned_face = recognizer.alignCrop(image, face)
+    
+    # Extract the 128-dimensional feature vector
+    feature = recognizer.feature(aligned_face)
+    return feature[0].tolist()
 
 def enroll_person(image_b64: str, person_id: str, profile_type: str) -> str:
     """Generates embedding and stores it in Supabase."""
@@ -36,7 +51,6 @@ def enroll_person(image_b64: str, person_id: str, profile_type: str) -> str:
     embedding = generate_embedding(img)
     
     # Insert into supabase
-    # Note: Table structure assumed based on technical spec
     data, count = supabase.table("face_vectors").insert({
         "person_id": person_id,
         "type": profile_type,

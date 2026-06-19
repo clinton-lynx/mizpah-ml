@@ -1,7 +1,6 @@
 fastapi>=0.115.0
 uvicorn>=0.30.0
 pydantic>=2.9.0
-face_recognition
 supabase
 python-dotenv
-cmake
+opencv-python-headless

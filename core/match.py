@@ -1,9 +1,9 @@
 from .enroll import decode_base64_image, generate_embedding
 from .config import supabase
 
-# Euclidean distance threshold for dlib (face_recognition)
-# Usually 0.6 is the standard strict threshold
-MATCH_THRESHOLD = 0.6 
+# Euclidean distance threshold for OpenCV SFace
+# SFace L2 distance threshold is ~1.128
+MATCH_THRESHOLD = 1.128 
 
 def match_person(image_b64: str, mode: str) -> dict:
     """
@@ -24,7 +24,6 @@ def match_person(image_b64: str, mode: str) -> dict:
     vector_string = f"[{','.join(map(str, embedding))}]"
     
     # Query Supabase using a Postgres RPC function 
-    # (Joshua must create an RPC named 'match_face' in Supabase!)
     response = supabase.rpc(
         'match_face',
         {
@@ -42,7 +41,7 @@ def match_person(image_b64: str, mode: str) -> dict:
         
     best_match = results[0]
     
-    # Convert Euclidean distance to confidence percentage (0 distance = 100%, 0.6 distance = 0%)
+    # Convert Euclidean distance to confidence percentage (0 distance = 100%, 1.128 distance = 0%)
     distance = best_match['distance']
     # Cap confidence between 0 and 100
     confidence_val = max(0.0, 100 * (1 - (distance / MATCH_THRESHOLD)))
