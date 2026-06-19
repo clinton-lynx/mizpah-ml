@@ -6,7 +6,7 @@ This is the machine learning module for the Mizpah AI Vision Safety Platform. It
 
 ## 🚀 API Contract for Backend Integration
 
-**Base URL:** `https://mizpah-ml-production.up.railway.app`
+**Base URL:** `<your-render-url>`
 
 ### 1. Scan Endpoint
 **Endpoint:** `POST /scan`  
@@ -70,43 +70,7 @@ This is the machine learning module for the Mizpah AI Vision Safety Platform. It
 }
 ```
 
----
 
-## 🚂 Deployment via Railway CLI
-
-If you need to push code updates to Railway without using GitHub, you can use the Railway CLI from your terminal.
-
-**Prerequisites:**
-You must have the Railway CLI installed. If not, install it via NPM:
-```bash
-npm install -g @railway/cli
-```
-
-**Deployment Steps:**
-1. Open your terminal in this `mizpah-ml` folder.
-2. Log into your Railway account:
-   ```bash
-   railway login
-   ```
-3. Push your local code directly to the Railway servers:
-   ```bash
-   railway up
-   ```
-4. Wait a few moments for the build to finish. Once completed, your live URL will be active.
-
-### 🛠️ Useful Railway Commands
-
-Here are the most common commands you will need when managing your deployment:
-
-| Command | Description |
-|---|---|
-| `railway up` | **Deploy your code**. Pushes your current local files to the Railway server. |
-| `railway domain` | **Get your URL**. Generates and displays your live public API URL. |
-| `railway logs` | **View live logs**. Streams the server logs so you can see print statements or errors. |
-| `railway redeploy` | **Force a redeploy**. Restarts your service and triggers a fresh build. |
-| `railway env` | **View environment variables**. Shows the secrets (like Supabase keys) configured on Railway. |
-
----
 
 ## 🗄️ Supabase Database Setup (For Backend Dev)
 
