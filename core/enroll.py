@@ -48,6 +48,8 @@ def enroll_person(image_b64: str, person_id: str, profile_type: str) -> str:
         raise Exception("Supabase client is not configured.")
         
     img = decode_base64_image(image_b64)
+    if img is None:
+        raise ValueError("Corrupt or invalid image data.")
     embedding = generate_embedding(img)
     
     # Insert into supabase

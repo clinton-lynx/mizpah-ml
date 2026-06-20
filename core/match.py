@@ -13,12 +13,13 @@ def match_person(image_b64: str, mode: str) -> dict:
     if supabase is None:
         raise Exception("Supabase client is not configured.")
         
-    img = decode_base64_image(image_b64)
-    
     try:
+        img = decode_base64_image(image_b64)
+        if img is None:
+            raise ValueError("Corrupt or invalid image data.")
         embedding = generate_embedding(img)
-    except ValueError:
-        return {"matched": False, "confidence": 0.0, "profile": None}
+    except (ValueError, AttributeError, Exception):
+        return {"matched": False, "confidence": 0.0, "distance": None, "profile": None}
 
     # Format the embedding for Postgres vector search
     vector_string = f"[{','.join(map(str, embedding))}]"
