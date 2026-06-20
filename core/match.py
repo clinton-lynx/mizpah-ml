@@ -37,7 +37,7 @@ def match_person(image_b64: str, mode: str) -> dict:
     results = response.data
     
     if not results:
-        return {"matched": False, "confidence": 0.0, "profile": None}
+        return {"matched": False, "confidence": 0.0, "distance": None, "profile": None}
         
     best_match = results[0]
     
@@ -45,6 +45,7 @@ def match_person(image_b64: str, mode: str) -> dict:
     # 0.0 to 0.8 is a great match (100% to 80%)
     # 0.8 to 1.5 is a decent/poor match (80% to 20%)
     # 1.5 to 1.8 is a terrible match (20% to 0%)
+    distance = best_match['distance']
     if distance <= 0.8:
         confidence_val = 100.0 - (20.0 * (distance / 0.8))
     elif distance <= 1.5:
@@ -58,6 +59,7 @@ def match_person(image_b64: str, mode: str) -> dict:
     return {
         "matched": True,
         "confidence": confidence,
+        "distance": round(distance, 4),
         "profile": {
             "person_id": best_match.get("person_id"),
             "name": best_match.get("name"),

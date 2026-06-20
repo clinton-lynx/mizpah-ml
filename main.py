@@ -27,6 +27,7 @@ class ProfileData(BaseModel):
 class ScanResponse(BaseModel):
     matched: bool
     confidence: float
+    distance: Optional[float] = None
     profile: Optional[ProfileData] = None
 
 class EnrollRequest(BaseModel):
