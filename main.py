@@ -6,11 +6,11 @@ from core.match import match_person
 from core.enroll import enroll_person
 
 # Increase MultiPartParser size limits globally to support larger webcam uploads
-import starlette.formparsers
-import starlette.multipartparser
-
-starlette.formparsers.MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
-starlette.multipartparser.MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
+try:
+    import starlette.formparsers
+    starlette.formparsers.MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
+except ImportError:
+    pass
 
 app = FastAPI(title="Mizpah ML API", description="Mock API for face recognition services")
 
