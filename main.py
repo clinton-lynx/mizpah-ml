@@ -6,19 +6,31 @@ from core.match import match_person
 from core.enroll import enroll_person
 
 # Increase MultiPartParser size limits globally to support larger webcam uploads
-try:
-    from starlette.formparsers import MultiPartParser
-    MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
-except Exception:
-    pass
+import starlette.formparsers
+import starlette.multipartparser
 
-try:
-    from starlette.multipartparser import MultiPartParser
-    MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
-except Exception:
-    pass
+starlette.formparsers.MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
+starlette.multipartparser.MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
 
 app = FastAPI(title="Mizpah ML API", description="Mock API for face recognition services")
+
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+
+class MaxPartSizeMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        if request.method in ["POST", "PUT", "PATCH"]:
+            content_type = request.headers.get("content-type", "")
+            if "multipart/form-data" in content_type or "application/x-www-form-urlencoded" in content_type:
+                # Cache the form data with a higher limit so FastAPI doesn't crash later
+                try:
+                    await request.form(max_parts=1000, max_part_size=100 * 1024 * 1024)
+                except TypeError:
+                    # In case the starlette version doesn't support these kwargs
+                    await request.form()
+        return await call_next(request)
+
+app.add_middleware(MaxPartSizeMiddleware)
 
 @app.get("/")
 def health_check():
