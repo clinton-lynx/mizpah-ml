@@ -2,8 +2,8 @@ from .enroll import decode_base64_image, generate_embedding
 from .config import supabase
 
 # Euclidean distance threshold for OpenCV SFace
-# SFace L2 distance threshold is ~1.128, but we relax it to 1.8 for varying webcam quality
-MATCH_THRESHOLD = 1.8 
+# SFace L2 distance standard threshold is ~1.128. We set it to 1.12 for tight, reliable matches.
+MATCH_THRESHOLD = 1.12
 
 def match_person(image_b64: str, mode: str) -> dict:
     """
@@ -41,17 +41,17 @@ def match_person(image_b64: str, mode: str) -> dict:
         
     best_match = results[0]
     
-    # Webcam-friendly confidence mapping
-    # 0.0 to 0.8 is a great match (100% to 80%)
-    # 0.8 to 1.5 is a decent/poor match (80% to 20%)
-    # 1.5 to 1.8 is a terrible match (20% to 0%)
+    # Confidence mapping adjusted for tighter 1.12 threshold
+    # 0.0 to 0.6 is an excellent match (100% to 90%)
+    # 0.6 to 0.9 is a good match (90% to 70%)
+    # 0.9 to 1.12 is a marginal match (70% to 50%)
     distance = best_match['distance']
-    if distance <= 0.8:
-        confidence_val = 100.0 - (20.0 * (distance / 0.8))
-    elif distance <= 1.5:
-        confidence_val = 80.0 - (60.0 * ((distance - 0.8) / 0.7))
+    if distance <= 0.6:
+        confidence_val = 100.0 - (10.0 * (distance / 0.6))
+    elif distance <= 0.9:
+        confidence_val = 90.0 - (20.0 * ((distance - 0.6) / 0.3))
     else:
-        confidence_val = 20.0 - (20.0 * ((distance - 1.5) / 0.3))
+        confidence_val = 70.0 - (20.0 * ((distance - 0.9) / 0.22))
         
     confidence_val = max(0.0, min(100.0, confidence_val))
     confidence = round(confidence_val, 1)
