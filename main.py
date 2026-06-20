@@ -5,6 +5,19 @@ from core.config import supabase
 from core.match import match_person
 from core.enroll import enroll_person
 
+# Increase MultiPartParser size limits globally to support larger webcam uploads
+try:
+    from starlette.formparsers import MultiPartParser
+    MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
+except Exception:
+    pass
+
+try:
+    from starlette.multipartparser import MultiPartParser
+    MultiPartParser.max_part_size = 100 * 1024 * 1024  # 100 MB
+except Exception:
+    pass
+
 app = FastAPI(title="Mizpah ML API", description="Mock API for face recognition services")
 
 @app.get("/")
