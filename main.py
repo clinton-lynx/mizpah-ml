@@ -24,7 +24,7 @@ class MaxPartSizeMiddleware(BaseHTTPMiddleware):
             if "multipart/form-data" in content_type or "application/x-www-form-urlencoded" in content_type:
                 # Cache the form data with a higher limit so FastAPI doesn't crash later
                 try:
-                    await request.form(max_parts=1000, max_part_size=100 * 1024 * 1024)
+                    await request.form(max_part_size=100 * 1024 * 1024)
                 except TypeError:
                     # In case the starlette version doesn't support these kwargs
                     await request.form()
