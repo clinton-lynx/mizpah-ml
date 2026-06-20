@@ -25,7 +25,14 @@ def decode_base64_image(b64_string: str) -> np.ndarray:
 
 def generate_embedding(image: np.ndarray) -> list:
     """Extracts a face embedding using native OpenCV SFace."""
+    # Resize image if it's too large to prevent CPU timeout / 502 Bad Gateway
     height, width, _ = image.shape
+    max_dim = 800
+    if max(width, height) > max_dim:
+        scale = max_dim / max(width, height)
+        image = cv2.resize(image, (int(width * scale), int(height * scale)))
+        height, width, _ = image.shape
+        
     detector.setInputSize((width, height))
     
     faces = detector.detect(image)
