@@ -18,6 +18,7 @@ class ScanRequest(BaseModel):
 class ProfileData(BaseModel):
     name: str
     type: str  # "medical", "watchlist", "missing"
+    person_id: Optional[str] = None
     blood_type: Optional[str] = None
     allergies: Optional[List[str]] = None
     conditions: Optional[List[str]] = None

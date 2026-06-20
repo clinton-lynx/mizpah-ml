@@ -57,8 +57,9 @@ def match_person(image_b64: str, mode: str) -> dict:
         "matched": True,
         "confidence": confidence,
         "profile": {
-            "name": best_match['name'],
-            "type": best_match['type'],
+            "person_id": best_match.get("person_id"),
+            "name": best_match.get("name"),
+            "type": best_match.get("type"),
             "blood_type": best_match.get('blood_type'),
             "allergies": best_match.get('allergies', []),
             "conditions": best_match.get('conditions', []),
