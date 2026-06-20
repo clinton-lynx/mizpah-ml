@@ -32,7 +32,7 @@ class MaxPartSizeMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(MaxPartSizeMiddleware)
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def health_check():
     return {"status": "ok", "message": "Mizpah ML API is running!"}
 
