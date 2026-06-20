@@ -51,12 +51,12 @@ def main():
     print(f"\n[Raw L2 Distance]: {distance:.4f}")
 
     # Exact confidence math from core/match.py
-    if distance <= 0.6:
-        confidence_val = 100.0 - (10.0 * (distance / 0.6))
-    elif distance <= 0.9:
-        confidence_val = 90.0 - (20.0 * ((distance - 0.6) / 0.3))
+    if distance <= 0.8:
+        confidence_val = 100.0 - (20.0 * (distance / 0.8))
+    elif distance <= 1.2:
+        confidence_val = 80.0 - (30.0 * ((distance - 0.8) / 0.4))
     else:
-        confidence_val = 70.0 - (20.0 * ((distance - 0.9) / 0.22))
+        confidence_val = 50.0 - (50.0 * ((distance - 1.2) / 0.3))
         
     confidence_val = max(0.0, min(100.0, confidence_val))
     confidence = round(confidence_val, 1)
