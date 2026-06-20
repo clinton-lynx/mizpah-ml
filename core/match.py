@@ -41,10 +41,16 @@ def match_person(image_b64: str, mode: str) -> dict:
         
     best_match = results[0]
     
-    # Convert Euclidean distance to confidence percentage (0 distance = 100%, 1.128 distance = 0%)
+    # Convert Euclidean distance to realistic confidence percentage
     distance = best_match['distance']
-    # Cap confidence between 0 and 100
-    confidence_val = max(0.0, 100 * (1 - (distance / MATCH_THRESHOLD)))
+    
+    if distance <= 1.128:
+        # 0.0 distance = 100%, 1.128 distance = 70%
+        confidence_val = 100.0 - (30.0 * (distance / 1.128))
+    else:
+        # 1.128 distance = 70%, 1.4 distance = 0%
+        confidence_val = 70.0 * max(0.0, (1.4 - distance) / (1.4 - 1.128))
+        
     confidence = round(confidence_val, 1)
     
     return {
