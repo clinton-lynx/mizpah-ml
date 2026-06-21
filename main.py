@@ -14,24 +14,6 @@ except ImportError:
 
 app = FastAPI(title="Mizpah ML API", description="Mock API for face recognition services")
 
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-
-class MaxPartSizeMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        if request.method in ["POST", "PUT", "PATCH"]:
-            content_type = request.headers.get("content-type", "")
-            if "multipart/form-data" in content_type or "application/x-www-form-urlencoded" in content_type:
-                # Cache the form data with a higher limit so FastAPI doesn't crash later
-                try:
-                    await request.form(max_part_size=100 * 1024 * 1024)
-                except TypeError:
-                    # In case the starlette version doesn't support these kwargs
-                    await request.form()
-        return await call_next(request)
-
-app.add_middleware(MaxPartSizeMiddleware)
-
 @app.api_route("/", methods=["GET", "HEAD"])
 def health_check():
     return {"status": "ok", "message": "Mizpah ML API is running!"}
