@@ -13,12 +13,18 @@ def image_to_base64(filepath: str) -> str:
 def test_scan():
     print(f"Testing the /scan endpoint at {API_URL}...")
     
-    # Test with the medical image
-    img_path = os.path.join(DEMO_IMAGES_DIR, "medical_1.jpg")
+    # Check if a custom image path was passed as a command-line argument
+    if len(sys.argv) > 1:
+        img_path = sys.argv[1]
+    else:
+        # Default test image
+        img_path = os.path.join(DEMO_IMAGES_DIR, "medical_1.jpg")
+        
     if not os.path.exists(img_path):
         print(f"Error: Could not find sample image at {img_path}")
         return
 
+    print(f"Scanning image: {img_path}")
     b64_image = image_to_base64(img_path)
     
     # Payload for the scan request

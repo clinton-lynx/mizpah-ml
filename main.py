@@ -51,7 +51,7 @@ class EnrollResponse(BaseModel):
 def scan_face(request: ScanRequest):
     """
     Endpoint for scanning a face.
-    If Supabase is configured, runs the real DeepFace match logic.
+    If Supabase is configured, runs the real face match logic.
     Otherwise, falls back to a mock response.
     """
     if supabase is not None:
@@ -89,7 +89,7 @@ def scan_face(request: ScanRequest):
 def enroll_face(request: EnrollRequest):
     """
     Endpoint for enrolling a face.
-    If Supabase is configured, runs the real DeepFace extraction logic.
+    If Supabase is configured, runs the real face embedding extraction logic.
     Otherwise, returns a mock success.
     """
     if supabase is not None:
@@ -97,7 +97,7 @@ def enroll_face(request: EnrollRequest):
             emb_id = enroll_person(request.image, request.person_id, request.type)
             return EnrollResponse(
                 success=True,
-                message="Face enrolled successfully via DeepFace.",
+                message="Face enrolled successfully.",
                 embedding_id=str(emb_id)
             )
         except Exception as e:

@@ -3,7 +3,7 @@ from .config import supabase
 
 # Euclidean distance threshold for OpenCV SFace
 # SFace L2 distance standard threshold is ~1.128. We relax it to 1.5 to make webcam matching more forgiving.
-MATCH_THRESHOLD = 1.5
+MATCH_THRESHOLD = 1.8
 
 def match_person(image_b64: str, mode: str) -> dict:
     """
@@ -47,12 +47,12 @@ def match_person(image_b64: str, mode: str) -> dict:
     # 0.8 to 1.2 is a decent match (80% to 50%)
     # 1.2 to 1.5 is a marginal match (50% to 0%)
     distance = best_match['distance']
-    if distance <= 0.8:
-        confidence_val = 100.0 - (20.0 * (distance / 0.8))
-    elif distance <= 1.2:
-        confidence_val = 80.0 - (30.0 * ((distance - 0.8) / 0.4))
+    if distance <= 1.0:
+        confidence_val = 100.0 - (20.0 * (distance / 1.0))
+    elif distance <= 1.5:
+        confidence_val = 80.0 - (30.0 * ((distance - 1.0) / 0.5))
     else:
-        confidence_val = 50.0 - (50.0 * ((distance - 1.2) / 0.3))
+        confidence_val = 60.0 - (40.0 * ((distance - 1.5) / 0.3))
         
     confidence_val = max(0.0, min(100.0, confidence_val))
     confidence = round(confidence_val, 1)

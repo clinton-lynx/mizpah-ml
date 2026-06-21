@@ -1,0 +1,115 @@
+{
+  "info": {
+    "name": "Mizpah ML API",
+    "description": "API collection for the Mizpah ML Face Recognition service.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Scan Face",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"image\": \"PASTE_BASE64_HERE\",\n  \"mode\": \"passive\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/scan",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "scan"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Enroll Face",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"image\": \"PASTE_BASE64_HERE\",\n  \"person_id\": \"b32a18f4-2f34-4581-817c-8d1e44ed1a80\",\n  \"type\": \"watchlist\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/enroll",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "enroll"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://mizpah-ml.onrender.com",
+      "type": "string"
+    }
+  ]
+}
