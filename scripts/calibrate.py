@@ -38,7 +38,7 @@ def calibrate_threshold():
             try:
                 res = match_person(b64, mode)
                 if res["matched"]:
-                    print(f"  -> MATCHED as {res['profile']['name']} ({mode}) with {res['confidence']}% confidence")
+                    print(f"  -> MATCHED as {res['profile']['name']} ({mode}) | distance: {res['distance']:.4f}, confidence: {res['confidence']}%")
             except Exception as e:
                 print(f"  -> Error testing {mode}: {e}")
                 

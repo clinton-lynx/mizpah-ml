@@ -15,6 +15,7 @@ import threading
 import webbrowser
 import urllib.request
 import urllib.error
+import socket
 import os
 
 PORT = 9000
@@ -755,16 +756,35 @@ class ProxyHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
 
 
+def get_local_ip():
+    """Finds the local IP address of the machine."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # Doesn't have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'  # Fallback to localhost
+    finally:
+        s.close()
+    return IP
+
+
 def main():
     server = http.server.HTTPServer(('0.0.0.0', PORT), ProxyHandler)
+    local_ip = get_local_ip()
+
     print("=" * 56)
     print("  MIZPAH ML - Live Webcam Demo")
     print("=" * 56)
-    print(f"  Local:  http://localhost:{PORT}")
-    print(f"  API:    {API_URL}")
+    print(f"  Local URL:    http://localhost:{PORT}")
+    if local_ip != '127.0.0.1':
+        print(f"  Network URL:  http://{local_ip}:{PORT} (use on your phone)")
+    print(f"  Remote API:   {API_URL}")
     print("=" * 56)
     print()
-    print("  Press Ctrl+C to stop.")
+    print("  Your browser will open automatically.")
+    print("  To stop the server, press Ctrl+C in this terminal.")
     print()
 
     # Open browser automatically

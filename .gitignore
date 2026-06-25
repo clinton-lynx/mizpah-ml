@@ -5,3 +5,12 @@ __pycache__/
 venv/
 env/
 ENV/
+
+# Exclude test images and large payloads
+*.jpg
+*.JPG
+*.jpeg
+*.png
+*_payload.json
+scripts/demo_images/
+scripts/test_images/
